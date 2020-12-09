@@ -46,12 +46,12 @@ class VideosWidget(ScrollableWidget):
         # draw items
         for index, item in enumerate(self.content[self.top:self.top + self.max_lines]):
             # Highlight the current cursor line
-            color = self.selected_color if index == self.current and self.is_focused else self.color
+            color = self.selected_color if index == self.current else self.color
             item_text = '* ' + \
                 str(item) if item in self.selected_videos else str(item)
             if item in self.selected_videos:
                 color = color | curses.A_BOLD
-            short_text = textwrap.shorten(item_text, self.rect.w - 4)
+            short_text = textwrap.shorten(item_text, self.rect.w - self._TEXT_WRAP_PADDING)
             # until the end of line
             short_text += " " * (self.rect.w - 2 - len(short_text))
             self.subwindow.addstr(

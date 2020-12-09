@@ -1,5 +1,4 @@
 from .scrollablewidget import ScrollableWidget
-import textwrap
 
 
 class InfoWidget(ScrollableWidget):
@@ -8,18 +7,15 @@ class InfoWidget(ScrollableWidget):
         super().__init__(window, content, header, rect, box)
 
     def update_content(self, content):
-        cache = content.copy()
-        for i in range(len(content)):
-            content.insert(i * 2, ' ')
-        cache = content.copy()
-        for i in range(len(cache)):
-            item = cache[i]
-            index = cache.index(item)
-            subline = textwrap.wrap(str(item), self.rect.w - 10)
-            if(len(subline) > 1):
-                content.pop(index)
-                content[index:index] = subline
-
-        self.content = content
+        new_content = []
+        for i in content:
+            new_content.extend(self._wrap(
+                i, self.rect.w - self._TEXT_WRAP_PADDING))
+            new_content.append('')
+        self.content = new_content
         self.bottom = len(self.content)
+        self.current = 0
         self.display()
+
+    def _wrap(self, s, w):
+        return [s[i:i + w].strip() for i in range(0, len(s), w)]

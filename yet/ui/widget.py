@@ -13,6 +13,7 @@ class Focusable():
 
 
 class Widget(object):
+    _TEXT_WRAP_PADDING = 4
 
     def __init__(self, window, content, header, rect, box=True):
         self.window = window
@@ -95,5 +96,5 @@ class Widget(object):
             self.subwindow.addstr(
                 index + start_x,
                 2,
-                textwrap.shorten(str(item), self.rect.w - 4),
+                textwrap.shorten(str(item), self.rect.w - self._TEXT_WRAP_PADDING),
                 self.color)

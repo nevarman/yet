@@ -18,8 +18,9 @@ class Entry():
     def __str__(self):
         return self.title
 
-    def get_extended_info(self):
-        return "%s\n\t%s\n\tPublished:%s, Updated:%s\n\tViews:%s" % (self.title, self.description, self.published, self.updated, self.views)
+    def get_extended_info(self) -> list:
+        return [self.title, self.description, "Published:%s" % (self.published),
+                "Updated:%s" % (self.updated), "Views:%s" % (self.views)]
 
 
 class Feed():

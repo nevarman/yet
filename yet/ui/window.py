@@ -38,8 +38,10 @@ class Window(object):
         curses.start_color()
         curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)  # text
         curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_CYAN)  # selection
-        curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_YELLOW)  # header and info bar
-        curses.init_pair(4, curses.COLOR_BLACK, curses.COLOR_WHITE)  # info bar loading
+        # header and info bar
+        curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_YELLOW)
+        curses.init_pair(4, curses.COLOR_BLACK,
+                         curses.COLOR_WHITE)  # info bar loading
         self.console_height, self.console_width = window.getmaxyx()
         return window
 
@@ -188,7 +190,7 @@ class Window(object):
         self.videos_widget.update_content(content)
 
     def _on_select_video(self, index):
-        items = self.videos_widget.get_current_index_item().get_extended_info().split('\n\t')
+        items = self.videos_widget.get_current_index_item().get_extended_info()
         self.info_widget.update_content(items)
         if not self.download:
             self.infobar.set_info_text(

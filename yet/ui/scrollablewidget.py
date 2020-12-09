@@ -50,6 +50,7 @@ class ScrollableWidget(Widget, Focusable):
         if(current_index != self.get_current_index() and self.selectcallback):
             self.selectcallback(self.get_current_index())
 
+        self.window.move(self.current + 2, self.rect.x)
         self.display()
 
     def get_current_index(self):
@@ -72,6 +73,7 @@ class ScrollableWidget(Widget, Focusable):
         super().set_focused(focused)
         if self.selectcallback is not None:
             self.selectcallback(self.get_current_index())
+        self.window.move(self.current + 2, self.rect.x)
         self.display()
 
     def resize(self, rect):
@@ -86,8 +88,9 @@ class ScrollableWidget(Widget, Focusable):
         # draw items
         for index, item in enumerate(self.content[self.top:self.top + self.max_lines]):
             # Highlight the current cursor line
-            color = self.selected_color if index == self.current and self.is_focused else self.color
-            short_text = textwrap.shorten(str(item), self.rect.w - 4)
+            color = self.selected_color if index == self.current else self.color
+            short_text = textwrap.shorten(
+                str(item), self.rect.w - self._TEXT_WRAP_PADDING)
             # until the end of line
             short_text += " " * (self.rect.w - 2 - len(short_text))
             self.subwindow.addstr(
