@@ -1,10 +1,7 @@
-from .scrollablewidget import ScrollableWidget
+from .scrollablewidget import ScrollableWidget, Focusable
 
 
-class InfoWidget(ScrollableWidget):
-
-    def __init__(self, window, content, header, rect, config):
-        super().__init__(window, content, header, rect, config)
+class InfoWidget(ScrollableWidget, Focusable):
 
     def update_content(self, content):
         new_content = []

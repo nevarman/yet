@@ -27,7 +27,7 @@ class Widget(object):
         self.box = config.getboolean('box', fallback=False)
         self.color = curses.color_pair(config.getint('fg', fallback=11))
         self.header_color = curses.color_pair(
-            config.getint('headerfg', fallback=12)) | curses.A_REVERSE
+            config.getint('headerbg', fallback=12)) | curses.A_REVERSE | curses.A_BOLD
 
     def update_content(self, content):
         self.content = content

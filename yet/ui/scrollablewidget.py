@@ -47,8 +47,9 @@ class ScrollableWidget(Widget, Focusable):
             self.current = next_line
 
         # Send index
-        if(current_index != self.get_current_index() and self.selectcallback):
-            self.selectcallback(self.get_current_index())
+        if current_index != self.get_current_index():
+            if self.selectcallback is not None:
+                self.selectcallback(self.get_current_index())
             self.window.move(self.current + 2, self.rect.x)
             self.display()
 

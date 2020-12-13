@@ -8,8 +8,8 @@ class Entry():
     def __init__(self, entry):
         self.title = entry['title']
         self.link = entry['link']['@href']
-        self.published = entry['published']
-        self.updated = entry['updated']
+        self.published = entry['published'].replace("T", " / ")
+        self.updated = entry['updated'].replace("T", " / ")
         self.thumbnail = entry['media:group']['media:thumbnail']['@url']
         self.description = entry['media:group']['media:description'].replace(
             '\n', '')
