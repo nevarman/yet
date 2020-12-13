@@ -18,11 +18,14 @@ class MyLogger(object):
 
 class YtdlWrapper():
 
-    def __init__(self, hook):
+    def __init__(self, hook, ytconfig):
         self.hook = hook
+        self.config = ytconfig
+        self.output_path = self.config.get('output_path', fallback=config.get_videos_dir())
+        self.extension = self.config.get('video_format', fallback='mp4')
         self.ydl_opts = {
-            'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
-            'outtmpl': config.get_videos_dir() + '%(title)s.%(ext)s',
+            'format': 'bestvideo[ext={ex}]+bestaudio[ext=m4a]/best[ext={ex}]/best'.format(ex=self.extension),
+            'outtmpl': self.output_path + '%(title)s.%(ext)s',
             # 'postprocessors': [{
             #     'key': 'FFmpegExtractAudio',
             #     'preferredcodec': 'mp3',
@@ -40,7 +43,7 @@ class YtdlWrapper():
         with youtube_dl.YoutubeDL(self.ydl_opts) as ydl:
             for u in url_list:
                 info = ydl.extract_info(u, download=False)
-                name = config.get_videos_dir() + u'%s.mp4' % info['title']
+                name = self.output_path + u'{title}.{ext}'.format(title=info['title'], ext=self.extension)
                 if Path(name).is_file():
                     self.hook({'status': 'exists'})
                     url_list.remove(u)

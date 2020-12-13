@@ -1,6 +1,5 @@
 from .scrollablewidget import ScrollableWidget
 import textwrap
-import webbrowser
 import curses
 
 
@@ -23,13 +22,6 @@ class VideosWidget(ScrollableWidget):
     def clear_selected_videos(self):
         self.selected_videos = []
         self.display
-
-    def open_in_browser(self):
-        if not self.is_focused:
-            return
-        video = self.get_current_index_item()
-        if video and video.link:
-            webbrowser.open_new_tab(video.link)
 
     def get_urls_to_download(self):
         if len(self.selected_videos) > 0:

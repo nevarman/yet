@@ -55,7 +55,7 @@ class YetConfig(object):
     CONFIG_KEY_WIDGET_BAR = 'infobar'
 
     def __init__(self):
-        self.config = configparser.ConfigParser()
+        self.config = configparser.ConfigParser(allow_no_value=True)
         self.config.read(CONFIG_FILE_PATH)
         if len(self.config.sections()) == 0:
             # check fallback config

@@ -8,6 +8,8 @@ from .widget import Focusable
 from yt.ytdlwrapper import YtdlWrapper
 import curses
 import curses.textpad
+import subprocess
+import webbrowser
 
 
 class Window(object):
@@ -132,9 +134,11 @@ class Window(object):
             elif ch in self.yetconfig.get_keybinding("selectvideo"):
                 self.videos_widget.select_video()
             elif ch in self.yetconfig.get_keybinding("open"):
-                self.videos_widget.open_in_browser()
+                self.open_in_browser()
             elif ch in self.yetconfig.get_keybinding("download"):
                 self.yt_download()
+            elif ch in self.yetconfig.get_keybinding("vlc"):
+                self.open_in_vlc()
 
     def resize(self):
         # Recalculate
@@ -206,7 +210,7 @@ class Window(object):
         self.info_widget.update_content(items)
         if not self.download:
             self.infobar.set_info_text(
-                "Press D to download - O to open in browser - Space to add to the basket.")
+                "Press D to download -  Space to add to the basket - O to open in browser - V to open in VLC")
 
     def yt_download(self):
         if self.download:
@@ -216,7 +220,7 @@ class Window(object):
             self.infobar.set_info_text("Select video/s to download...")
             return
         try:
-            ytdl = YtdlWrapper(self._yt_hook)
+            ytdl = YtdlWrapper(self._yt_hook, self.yetconfig.get_section("youtube-dl"))
             ytdl.get(urls)
             self.infobar.set_info_text("Checking library.")
         except Exception as e:
@@ -244,3 +248,17 @@ class Window(object):
             self.infobar.set_info_text("Done...%s" % file)
         elif d['status'] == 'exists':
             self.infobar.set_info_text("Already in library.")
+
+    def open_in_browser(self):
+        """ Opens the video on youtube """
+        if not self.videos_widget.is_focused:
+            return
+        video = self.videos_widget.get_current_index_item()
+        if video and video.link:
+            webbrowser.open_new_tab(video.link)
+
+    def open_in_vlc(self):
+        """ Opens the link in VLC media player """
+        video = self.videos_widget.get_current_index_item()
+        if video and video.link:
+            subprocess.Popen(['vlc', str(video.link)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

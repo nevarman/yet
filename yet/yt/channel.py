@@ -73,7 +73,7 @@ class Subsriptions():
             self.subsriptions.append(Channel(channel_ids[i]))
             # send callback
             if self.callback is not None:
-                self.callback(i + 1, len(channel_ids), self.subsriptions)
+                self.callback(i + 1, len(channel_ids), self.get_sorted_subsriptions())
 
     def get_sorted_subsriptions(self):
         return sorted(
