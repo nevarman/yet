@@ -12,9 +12,9 @@ import curses.textpad
 
 class Window(object):
 
-    def __init__(self, model, config=None):
+    def __init__(self, model=None, yetconfig=None):
 
-        self.config = config
+        self.yetconfig = yetconfig
         self.video_index = 0
         self.download = False
         self.subs_widget = None
@@ -36,12 +36,9 @@ class Window(object):
         window.nodelay(False)
         # curses.halfdelay(20)
         curses.start_color()
-        curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)  # text
-        curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_CYAN)  # selection
-        # header and info bar
-        curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_YELLOW)
-        curses.init_pair(4, curses.COLOR_BLACK,
-                         curses.COLOR_WHITE)  # info bar loading
+        curses.use_default_colors()
+        for i in range(0, curses.COLORS):
+            curses.init_pair(i + 1, i, -1)
         self.console_height, self.console_width = window.getmaxyx()
         return window
 
@@ -51,8 +48,9 @@ class Window(object):
         w = round(self.console_width * self.widget_placement[0])
         rect = Rect(w, self.console_height - 1, 0, 0)
         self.subs_widget = ScrollableWidget(self.window,
-                                            self.model.subsriptions,
-                                            'Subscriptions', rect, True)
+                                            None,
+                                            'Subscriptions', rect,
+                                            self.yetconfig.get_section(self.yetconfig.CONFIG_KEY_WIDGET_SUBS))
         widgets.append(self.subs_widget)
         self.subs_widget.set_listener(self._on_select_subs)
 
@@ -61,7 +59,8 @@ class Window(object):
         rect2 = Rect(w, self.console_height - 1, rect.w, 0)
         self.videos_widget = VideosWidget(self.window,
                                           [],
-                                          'Videos', rect2, True)
+                                          'Videos', rect2,
+                                          self.yetconfig.get_section(self.yetconfig.CONFIG_KEY_WIDGET_VIDEO))
         self.videos_widget.set_listener(self._on_select_video)
         widgets.append(self.videos_widget)
 
@@ -70,20 +69,32 @@ class Window(object):
         rect3 = Rect(w, self.console_height - 1, rect2.x + rect2.w, 0)
         self.info_widget = InfoWidget(self.window,
                                       [],
-                                      'Info', rect3, True)
+                                      'Info', rect3,
+                                      self.yetconfig.get_section(self.yetconfig.CONFIG_KEY_WIDGET_INFO))
         widgets.append(self.info_widget)
 
         recti = Rect(self.console_width, 1, 0, self.console_height - 1)
-        self.infobar = InfoBar(self.window, None, None, recti, False)
+        self.infobar = InfoBar(self.window, None, None, recti,
+                               self.yetconfig.get_section(self.yetconfig.CONFIG_KEY_WIDGET_BAR))
         widgets.append(self.infobar)
 
         # current screen subs
         self.screen_index = 0
         for i in widgets:
             i.display()
-        # set focused
-        self.subs_widget.set_focused(True)
+
         return widgets
+
+    def update_model(self, i, total, model):
+        self.model = model
+        self.subs_widget.update_content(model)
+        self.infobar.set_info_text(
+            "Fetching feed %d/%d" % (i, total), float(i) / total)
+        if i == total:
+            self.infobar.set_info_text(
+                "Welcome to yet! Select a video to download. Press Q to exit.")
+            # set focused
+            self.subs_widget.set_focused(True)
 
     def destroy(self):
         self.window.clear()
@@ -104,26 +115,25 @@ class Window(object):
         """Waiting an input
         and run a proper method according to type of input"""
         while True:
-
             # input
             ch = self.window.getch()
-            if ch == curses.ascii.ESC or ch == ord('q'):  # EXIT
+            if ch in self.yetconfig.get_keybinding("exit"):  # EXIT
                 break
-            elif ch == curses.KEY_UP or ch == ord('k'):
+            elif ch in self.yetconfig.get_keybinding("up"):
                 self._scroll_widget(-1)
-            elif ch == curses.KEY_DOWN or ch == ord('j'):
+            elif ch in self.yetconfig.get_keybinding("down"):
                 self._scroll_widget(1)
-            elif ch == curses.KEY_LEFT or ch == ord('h'):
+            elif ch in self.yetconfig.get_keybinding("left"):
                 self._focus_next_widget(-1)
-            elif ch == curses.KEY_RIGHT or ch == ord('l'):
+            elif ch in self.yetconfig.get_keybinding("right"):
                 self._focus_next_widget(1)
             elif ch == curses.KEY_RESIZE:
                 self.resize()
-            elif ch == ord(' '):
+            elif ch in self.yetconfig.get_keybinding("selectvideo"):
                 self.videos_widget.select_video()
-            elif ch == ord('o'):
+            elif ch in self.yetconfig.get_keybinding("open"):
                 self.videos_widget.open_in_browser()
-            elif ch == ord('d'):
+            elif ch in self.yetconfig.get_keybinding("download"):
                 self.yt_download()
 
     def resize(self):
@@ -186,8 +196,10 @@ class Window(object):
 
     def _on_select_subs(self, index):
         # channel feed entries for videos
-        content = self.subs_widget.get_current_index_item().feed.entries
-        self.videos_widget.update_content(content)
+        channel = self.subs_widget.get_current_index_item()
+        if channel is None:
+            return
+        self.videos_widget.update_content(channel.feed.entries)
 
     def _on_select_video(self, index):
         items = self.videos_widget.get_current_index_item().get_extended_info()

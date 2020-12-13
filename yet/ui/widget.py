@@ -15,7 +15,7 @@ class Focusable():
 class Widget(object):
     _TEXT_WRAP_PADDING = 4
 
-    def __init__(self, window, content, header, rect, box=True):
+    def __init__(self, window, content, header, rect, config):
         self.window = window
         self.rect = rect
         self.content = content
@@ -24,8 +24,10 @@ class Widget(object):
         # create sub window
         self.subwindow = self.window.subwin(
             self.rect.h, self.rect.w, self.rect.y, self.rect.x)
-        self.box = box
-        self.color = curses.color_pair(1)
+        self.box = config.getboolean('box', fallback=False)
+        self.color = curses.color_pair(config.getint('fg', fallback=11))
+        self.header_color = curses.color_pair(
+            config.getint('headerfg', fallback=12)) | curses.A_REVERSE
 
     def update_content(self, content):
         self.content = content
@@ -77,7 +79,7 @@ class Widget(object):
             t = textwrap.shorten(self.header, self.rect.w - 2)
             lenght = max(0, (self.rect.w - 2 - len(t)))
             text = t + ' ' * lenght
-            self.subwindow.addstr(1, 1, text, curses.color_pair(3))
+            self.subwindow.addstr(1, 1, text, self.header_color)
         x = 2 if has_header else 1
         if self.box:
             try:

@@ -6,10 +6,12 @@ import textwrap
 class InfoBar(Widget):
     ''' Info bar widget '''
 
-    def __init__(self, window, content, header, rect, box=True):
-        super().__init__(window, content, header, rect, box)
-        self.info_text = "Welcome to yet! Select a video to download. Press Q to exit."
+    def __init__(self, window, content, header, rect, config):
+        super().__init__(window, content, header, rect, config)
+        self.info_text = ""
         self.progress = 1.0
+        self.color = curses.color_pair(config.getint('fg', fallback=4)) | curses.A_REVERSE
+        self.colorprogress = curses.color_pair(config.getint('progressfg', fallback=0)) | curses.A_REVERSE
 
     def set_info_text(self, text, progress=1.0):
         self.info_text = text
@@ -23,14 +25,10 @@ class InfoBar(Widget):
         try:
             length = len(text)
             done = int((length * self.progress))
-            self.subwindow.attron(curses.color_pair(3))
-            self.subwindow.addstr(0, 1, text[0:done])
-            self.subwindow.attroff(curses.color_pair(3))
-
-            self.subwindow.attron(curses.color_pair(4))
-            self.subwindow.addstr(0, 1 + done, text[done:length])
-            self.subwindow.attroff(curses.color_pair(4))
+            self.subwindow.addstr(0, 1, text[0:done], self.color)
+            self.subwindow.addstr(0, 1 + done, text[done:length], self.colorprogress)
         except curses.error:
+            # TODO log
             pass
 
         self.subwindow.refresh()

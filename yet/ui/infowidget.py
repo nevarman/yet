@@ -3,8 +3,8 @@ from .scrollablewidget import ScrollableWidget
 
 class InfoWidget(ScrollableWidget):
 
-    def __init__(self, window, content, header, rect, box=True):
-        super().__init__(window, content, header, rect, box)
+    def __init__(self, window, content, header, rect, config):
+        super().__init__(window, content, header, rect, config)
 
     def update_content(self, content):
         new_content = []

@@ -8,16 +8,16 @@ class ScrollableWidget(Widget, Focusable):
     UP = -1
     DOWN = 1
 
-    def __init__(self, window, content, header, rect, box=True):
+    def __init__(self, window, content, header, rect, config):
         super().__init__(
-            window, content, header, rect, box)
+            window, content, header, rect, config)
         Focusable.__init__(self)
         self.top = 0
-        self.bottom = len(self.content)
+        self.bottom = 0
         self.max_lines = self.rect.h - 3
         self.current = 0
         self.selectcallback = None
-        self.selected_color = curses.color_pair(2)
+        self.selected_color = curses.color_pair(config.getint('selectionfg', fallback=11)) | curses.A_REVERSE
 
     def scroll(self, direction):
         """Scrolling the window when pressing up/down arrow keys"""
@@ -49,14 +49,15 @@ class ScrollableWidget(Widget, Focusable):
         # Send index
         if(current_index != self.get_current_index() and self.selectcallback):
             self.selectcallback(self.get_current_index())
-
-        self.window.move(self.current + 2, self.rect.x)
-        self.display()
+            self.window.move(self.current + 2, self.rect.x)
+            self.display()
 
     def get_current_index(self):
         return self.current + self.top
 
     def get_current_index_item(self):
+        if self.content is None:
+            return None
         return self.content[self.current + self.top]
 
     def update_content(self, content):

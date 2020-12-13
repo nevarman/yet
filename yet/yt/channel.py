@@ -33,6 +33,7 @@ class Feed():
         entries = []
         for i in self.data['feed']['entry']:
             entry = Entry(i)
+            # TODO check cache read
             entries.append(entry)
         self.entries = entries
 
@@ -62,16 +63,20 @@ class Channel():
 
 class Subsriptions():
 
-    def __init__(self, channel_ids: list):
+    def __init__(self, channel_ids: list, callback=None):
         self.channel_ids = channel_ids
         self.subsriptions = []
+        self.callback = callback
         for i in range(len(channel_ids)):
-            print("%i/%i - Fetching feed id:%s" %
-                  (i, len(channel_ids), channel_ids[i]), end="\r")
+            # print("%i/%i - Fetching feed id:%s" %
+            #       (i, len(channel_ids), channel_ids[i]), end="\r")
             self.subsriptions.append(Channel(channel_ids[i]))
+            # send callback
+            if self.callback is not None:
+                self.callback(i + 1, len(channel_ids), self.subsriptions)
 
-        # sort
-        self.subsriptions = sorted(
+    def get_sorted_subsriptions(self):
+        return sorted(
             self.subsriptions, key=lambda Channel: str(Channel))
 
     def get_channel(self, id) -> Channel:
