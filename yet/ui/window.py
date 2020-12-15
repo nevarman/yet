@@ -4,7 +4,7 @@ from .scrollablewidget import ScrollableWidget
 from .videoswidget import VideosWidget
 from .infowidget import InfoWidget
 from .widget import Focusable
-# from yet.yt.channel import Subsriptions
+from .subswidget import SubsWidget
 from yt.ytdlwrapper import YtdlWrapper
 import curses
 import curses.textpad
@@ -14,7 +14,7 @@ import webbrowser
 
 class Window(object):
 
-    def __init__(self, model=None, yetconfig=None):
+    def __init__(self, model=None, yetconfig=None, videoscache=None):
 
         self.yetconfig = yetconfig
         self.video_index = 0
@@ -24,6 +24,7 @@ class Window(object):
         self.info_screen = None
         self.infobar = None
         self.widget_placement = [0.2, 0.4, 0.4]
+        self.videos_cache = videoscache
 
         self.window = self.init_curses()
         self.model = model
@@ -49,10 +50,10 @@ class Window(object):
         # Subs window
         w = round(self.console_width * self.widget_placement[0])
         rect = Rect(w, self.console_height - 1, 0, 0)
-        self.subs_widget = ScrollableWidget(self.window,
-                                            None,
-                                            'Subscriptions', rect,
-                                            self.yetconfig.get_section(self.yetconfig.CONFIG_KEY_WIDGET_SUBS))
+        self.subs_widget = SubsWidget(self.window,
+                                      None,
+                                      'Subscriptions', rect,
+                                      self.yetconfig.get_section(self.yetconfig.CONFIG_KEY_WIDGET_SUBS), self.videos_cache)
         widgets.append(self.subs_widget)
         self.subs_widget.set_listener(self._on_select_subs)
 
@@ -131,6 +132,8 @@ class Window(object):
                 self._focus_next_widget(1)
             elif ch == curses.KEY_RESIZE:
                 self.resize()
+            elif ch in self.yetconfig.get_keybinding("markasread"):
+                self.mark_as_read()
             elif ch in self.yetconfig.get_keybinding("selectvideo"):
                 self.videos_widget.select_video()
             elif ch in self.yetconfig.get_keybinding("open"):
@@ -141,7 +144,7 @@ class Window(object):
                 self.open_in_vlc()
 
     def resize(self):
-        # Recalculate
+        """ Resize curses window and all widgets """
         height, width = self.window.getmaxyx()
         if width != self.console_width or height != self.console_height:
             self.window.erase()
@@ -181,11 +184,13 @@ class Window(object):
                 i.display()
 
     def _scroll_widget(self, dir):
+        """ Scroll a scrollablewidget with direction """
         w = self.widgets[self.screen_index]
         if isinstance(w, ScrollableWidget):
             w.scroll(dir)
 
     def _focus_next_widget(self, index):
+        """ Focuses next widget """
         widgets = [i for i in self.widgets if isinstance(i, Focusable)]
         w = widgets[self.screen_index]
         if isinstance(w, Focusable):
@@ -199,20 +204,30 @@ class Window(object):
         widgets[self.screen_index].set_focused(True)
 
     def _on_select_subs(self, index):
+        """ Called when subscriptions widget selects a channel """
+
         # channel feed entries for videos
         channel = self.subs_widget.get_current_index_item()
         if channel is None:
             return
-        self.videos_widget.update_content(channel.feed.entries)
+        entries = channel.feed.entries
+        self.videos_widget.update_content(
+            [i for i in entries if not self.videos_cache.contains(i.link)])
 
     def _on_select_video(self, index):
+        """ Called when videos widget selects a video """
+
         items = self.videos_widget.get_current_index_item().get_extended_info()
         self.info_widget.update_content(items)
         if not self.download:
             self.infobar.set_info_text(
                 "Press D to download -  Space to add to the basket - O to open in browser - V to open in VLC")
+        if self.yetconfig.get_section("common").getboolean("auto_markasread"):
+            self.mark_as_read()
 
     def yt_download(self):
+        """ Start downloading videos/s """
+
         if self.download:
             return
         urls = self.videos_widget.get_urls_to_download()
@@ -220,7 +235,8 @@ class Window(object):
             self.infobar.set_info_text("Select video/s to download...")
             return
         try:
-            ytdl = YtdlWrapper(self._yt_hook, self.yetconfig.get_section("youtube-dl"))
+            ytdl = YtdlWrapper(
+                self._yt_hook, self.yetconfig.get_section("youtube-dl"))
             ytdl.get(urls)
             self.infobar.set_info_text("Checking library.")
         except Exception as e:
@@ -251,6 +267,7 @@ class Window(object):
 
     def open_in_browser(self):
         """ Opens the video on youtube """
+
         if not self.videos_widget.is_focused:
             return
         video = self.videos_widget.get_current_index_item()
@@ -259,6 +276,16 @@ class Window(object):
 
     def open_in_vlc(self):
         """ Opens the link in VLC media player """
+
         video = self.videos_widget.get_current_index_item()
         if video and video.link:
-            subprocess.Popen(['vlc', str(video.link)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.Popen(['vlc', str(video.link)],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    def mark_as_read(self):
+        """ Sets the video as mark as read """
+
+        video = self.videos_widget.get_current_index_item()
+        video.read = True
+        self.videos_cache.add_to_cache(video.link)
+        self.videos_widget.display()

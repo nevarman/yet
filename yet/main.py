@@ -1,6 +1,7 @@
 from ui.window import Window
 from yt.channel import Subsriptions
 from config import config
+from config.videoscache import VideosCache
 
 
 def main():
@@ -14,7 +15,8 @@ def main():
     except config.YetConfigException:
         return
 
-    window = Window(None, yetconfig=yetconfig)
+    videoscache = VideosCache(yetconfig.get_section("common").getint("clean_cache", fallback=0))
+    window = Window(None, yetconfig=yetconfig, videoscache=videoscache)
     Subsriptions(channel_ids, window.update_model)
     window.run()
 

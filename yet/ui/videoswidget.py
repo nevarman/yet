@@ -43,6 +43,8 @@ class VideosWidget(ScrollableWidget):
                 str(item) if item in self.selected_videos else str(item)
             if item in self.selected_videos:
                 color = color | curses.A_BOLD
+            if item.read:
+                color = color | curses.A_DIM
             short_text = textwrap.shorten(item_text, self.rect.w - self._TEXT_WRAP_PADDING)
             # until the end of line
             short_text += " " * (self.rect.w - 2 - len(short_text))

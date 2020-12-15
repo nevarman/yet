@@ -17,7 +17,7 @@ def get_videos_dir():
 
 
 def _get_subs_json():
-
+    """ Reads subscriptions json file """
     try:
         with open(SUBS_PATH) as f:
             return json.load(f)
@@ -27,7 +27,7 @@ def _get_subs_json():
 
 
 def get_channel_ids() -> list:
-
+    """ Returns channel ids from youtube export data """
     json = _get_subs_json()
     if json is None:
         # TODO look for simple text maybe

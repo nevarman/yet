@@ -57,13 +57,14 @@ class ScrollableWidget(Widget, Focusable):
         return self.current + self.top
 
     def get_current_index_item(self):
-        if self.content is None:
+        if self.content is None or len(self.content) == 0:
             return None
         return self.content[self.current + self.top]
 
-    def update_content(self, content):
+    def update_content(self, content, scroll_to_zero=True):
+        if scroll_to_zero:
+            self.current = 0
         super(ScrollableWidget, self).update_content(content)
-        self.current = 0
         self.bottom = len(self.content)
 
     def set_listener(self, listener):

@@ -3,7 +3,7 @@ from .scrollablewidget import ScrollableWidget, Focusable
 
 class InfoWidget(ScrollableWidget, Focusable):
 
-    def update_content(self, content):
+    def update_content(self, content, scroll_to_zero=True):
         new_content = []
         for i in content:
             new_content.extend(self._wrap(
@@ -15,4 +15,4 @@ class InfoWidget(ScrollableWidget, Focusable):
         self.display()
 
     def _wrap(self, s, w):
-        return [s[i:i + w].strip() for i in range(0, len(s), w)]
+        return [s[i:i + w].strip().lstrip() for i in range(0, len(s), w)]

@@ -14,6 +14,7 @@ class Entry():
         self.description = entry['media:group']['media:description'].replace(
             '\n', '')
         self.views = entry['media:group']['media:community']['media:statistics']['@views']
+        self.read = False
 
     def __str__(self):
         return self.title
