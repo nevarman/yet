@@ -5,7 +5,7 @@ from .videoswidget import VideosWidget
 from .infowidget import InfoWidget
 from .widget import Focusable
 from .subswidget import SubsWidget
-from yt.ytdlwrapper import YtdlWrapper
+from yet.yt.ytdlwrapper import YtdlWrapper
 import curses
 import curses.textpad
 import subprocess

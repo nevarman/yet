@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 import youtube_dl
-from config import config
+from yet.config import config
 import threading
 from pathlib import Path
 

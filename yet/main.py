@@ -1,7 +1,7 @@
-from ui.window import Window
-from yt.channel import Subsriptions
-from config import config
-from config.videoscache import VideosCache
+from yet.ui.window import Window
+from yet.yt.channel import Subsriptions
+from yet.config import config
+from yet.config.videoscache import VideosCache
 
 
 def main():
