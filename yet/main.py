@@ -8,7 +8,8 @@ def main():
     try:
         channel_ids = config.get_channel_ids()
     except FileNotFoundError:
-        return
+        print("Using default channel...")
+        channel_ids = ["UCLA_DiR1FfKNvjuUpBHmylQ"]
 
     try:
         yetconfig = config.YetConfig()

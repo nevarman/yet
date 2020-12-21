@@ -2,7 +2,7 @@
 
 yet is a console (kind of rss) application to download youtube videos. It uses _subscriptions.json_ file which comes with your youtube export data. It provides a minimalistic and nice curses interface. It uses [youtube-dl](https://github.com/ytdl-org/youtube-dl#output-template) to download videos.
 
-![](./images/preview2.jpg)
+![](./docs/preview.jpg)
 
 ## How to use
 
@@ -12,4 +12,4 @@ yet is a console (kind of rss) application to download youtube videos. It uses _
 - Install pip requirements. You can use a virtual environment.
 - Run .../yet/main.py
 
-The downloaded video files are saved under $HOME/Videos directory. Project is currently under development and missing a configuration file for customizations.
+The downloaded video files are saved under $HOME/Videos directory.

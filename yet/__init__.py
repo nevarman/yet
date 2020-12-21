@@ -48,6 +48,3 @@ PY3 = version_info[0] >= 3
 # DATADIR = os.path.expanduser('~/.local/share/yet')
 
 # args = None
-
-# from yet.core.main import main
-# import main

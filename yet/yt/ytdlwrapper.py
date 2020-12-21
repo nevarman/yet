@@ -6,6 +6,7 @@ from pathlib import Path
 
 
 class MyLogger(object):
+    # TODO add file logger
     def debug(self, msg):
         pass
 
@@ -13,7 +14,7 @@ class MyLogger(object):
         pass
 
     def error(self, msg):
-        print(msg)
+        pass
 
 
 class YtdlWrapper():
@@ -49,6 +50,6 @@ class YtdlWrapper():
                     url_list.remove(u)
             try:
                 ydl.download(url_list)
-            except Exception as e:
+            except Exception:
                 self.hook({'status': 'error'})
-                print(e)
+                # TODO add logger

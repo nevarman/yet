@@ -15,6 +15,9 @@ class VideosCache(object):
             self.clear_old_cache(clean_day)
 
     def _create_table_if_not_exists(self):
+        ''' Creates dir and sql table if not exists '''
+        if not os.path.exists(self.CACHE_PATH):
+            os.makedirs(self.CACHE_PATH)
         with sq.connect(self.VIDEOS_CACHE_DB_PATH) as connection:
             sql = 'create table if not exists ' + self.TABLE + \
                 ' (id integer NOT NULL PRIMARY KEY AUTOINCREMENT, link TEXT, date timestamp)'
@@ -27,6 +30,13 @@ class VideosCache(object):
         values = (url, datetime.datetime.today())
         with sq.connect(self.VIDEOS_CACHE_DB_PATH) as connection:
             connection.execute(sql, values)
+
+    def delete(self, url):
+        if not self.contains(url):
+            return
+        sql = 'DELETE FROM ' + self.TABLE + ' WHERE link = ?'
+        with sq.connect(self.VIDEOS_CACHE_DB_PATH) as connection:
+            connection.execute(sql, (url,))
 
     def contains(self, url):
         sql = 'SELECT * FROM ' + self.TABLE + ' WHERE link = ?'

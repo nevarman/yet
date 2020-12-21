@@ -222,8 +222,6 @@ class Window(object):
         if not self.download:
             self.infobar.set_info_text(
                 "Press D to download -  Space to add to the basket - O to open in browser - V to open in VLC")
-        if self.yetconfig.get_section("common").getboolean("auto_markasread"):
-            self.mark_as_read()
 
     def yt_download(self):
         """ Start downloading videos/s """
@@ -239,9 +237,11 @@ class Window(object):
                 self._yt_hook, self.yetconfig.get_section("youtube-dl"))
             ytdl.get(urls)
             self.infobar.set_info_text("Checking library.")
+            if self.yetconfig.get_section("common").getboolean("auto_markasread"):
+                self.mark_as_read(True)
         except Exception as e:
             # curses.endwin()
-            print(str(e))
+            self.infobar.set_info_text(str(e))
         finally:
             self.videos_widget.clear_selected_videos()
 
@@ -262,6 +262,7 @@ class Window(object):
             self.download = False
             file = d['filename']
             self.infobar.set_info_text("Done...%s" % file)
+
         elif d['status'] == 'exists':
             self.infobar.set_info_text("Already in library.")
 
@@ -281,11 +282,22 @@ class Window(object):
         if video and video.link:
             subprocess.Popen(['vlc', str(video.link)],
                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if self.yetconfig.get_section("common").getboolean("auto_markasread"):
+            self.mark_as_read()
 
-    def mark_as_read(self):
+    def mark_as_read(self, selected_videos=False):
         """ Sets the video as mark as read """
-
-        video = self.videos_widget.get_current_index_item()
-        video.read = True
-        self.videos_cache.add_to_cache(video.link)
-        self.videos_widget.display()
+        if not selected_videos:
+            video = self.videos_widget.get_current_index_item()
+            if video.read:
+                video.read = False
+                self.videos_cache.delete(video.link)
+            else:
+                video.read = True
+                self.videos_cache.add_to_cache(video.link)
+            self.videos_widget.display()
+        else:
+            for video in self.videos_widget.selected_videos:
+                video.read = True
+                self.videos_cache.add_to_cache(video.link)
+            self.videos_widget.display()
