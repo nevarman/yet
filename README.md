@@ -4,6 +4,12 @@ yet is a console (kind of rss) application to download youtube videos. It uses _
 
 ![](./docs/preview.jpg)
 
+## Dependencies
+
+- Python>=3.6
+- youtube-dl
+- xmltodict
+
 ## Installation
 
 - First export your youtube data from https://takeout.google.com/, it should come with a subscriptions.json file.
@@ -11,7 +17,7 @@ yet is a console (kind of rss) application to download youtube videos. It uses _
 
 ### Using Pip
 
-- TODO
+- You can install yet through PyPi: pip install ye-tui
 
 ### From source
 

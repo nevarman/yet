@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="yet",
+    name="ye-tui",
     version=yet.__version__,
     author=yet.__author__,
     author_email=yet.__email__,
