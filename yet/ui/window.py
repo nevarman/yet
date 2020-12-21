@@ -280,8 +280,11 @@ class Window(object):
 
         video = self.videos_widget.get_current_index_item()
         if video and video.link:
-            subprocess.Popen(['vlc', str(video.link)],
-                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            try:
+                subprocess.Popen(['vlc', str(video.link)],
+                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except Exception:
+                self.infobar.set_info_text("Can't open in vlc, probably not installed or unaccessable...")
         if self.yetconfig.get_section("common").getboolean("auto_markasread"):
             self.mark_as_read()
 

@@ -9,14 +9,15 @@ setuptools.setup(
     version=yet.__version__,
     author=yet.__author__,
     author_email=yet.__email__,
+    license=yet.__license__,
     description="yet is a console (kind of rss) application to download youtube videos.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/nevarman/yet",
     packages=setuptools.find_packages(),
     package_data={
-        'yet':[
-          'config/yet.conf',
+        'yet': [
+            'config/yet.conf',
         ],
     },
     classifiers=[
@@ -29,13 +30,6 @@ setuptools.setup(
         'Operating System :: MacOS',
         'Operating System :: POSIX',
         'Operating System :: Unix',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.1',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Topic :: Desktop Environment',
         'Topic :: Utilities',

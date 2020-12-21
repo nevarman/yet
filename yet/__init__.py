@@ -30,7 +30,7 @@ def version_helper():
 
 # Information
 __license__ = 'GPL3'
-__version__ = '0.0.1'
+__version__ = '0.1.1'
 __release__ = False
 __author__ = __maintainer__ = 'mushroomrisotto'
 __email__ = 'pypi.gib@aleeas.com'
