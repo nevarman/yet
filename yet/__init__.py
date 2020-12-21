@@ -32,8 +32,8 @@ def version_helper():
 __license__ = 'GPL3'
 __version__ = '0.0.1'
 __release__ = False
-__author__ = __maintainer__ = 'na'
-__email__ = 'none'
+__author__ = __maintainer__ = 'mushroomrisotto'
+__email__ = 'pypi.gib@aleeas.com'
 
 # Constants
 YETDIR = os.path.dirname(__file__)
