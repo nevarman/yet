@@ -13,11 +13,11 @@ yet is a console (kind of rss) application to download youtube videos. It uses _
 ## Installation
 
 - First export your youtube data from https://takeout.google.com/, it should come with a subscriptions.json file.
-- Move the subscriptions.json into $HOME/.config/yet folder
+- Move the subscriptions.json into ~/.config/yet folder.
 
 ### Using Pip
 
-- You can install yet through PyPi: pip install ye-tui
+- You can install yet through PyPi: _pip install ye-tui_
 
 ### From source
 
