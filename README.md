@@ -36,4 +36,4 @@ The downloaded video files are saved under $HOME/Videos directory. You can chang
 
 ### Configuration
 
-Copy the yet/config/yet.conf from this repo or from python package directory, into ~/.cache/yet folder. The config file is self explanatory.
+Copy the yet/config/yet.conf from this repo or from python package directory, into ~/.config/yet folder. The config file is self explanatory.
