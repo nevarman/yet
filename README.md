@@ -12,9 +12,6 @@ yet is a console (kind of rss) application to download youtube videos. It uses _
 
 ## Installation
 
-- First export your youtube data from https://takeout.google.com/, it should come with a subscriptions.json file.
-- Move the subscriptions.json into ~/.config/yet folder.
-
 ### Using Pip
 
 - You can install yet through PyPi: _pip install ye-tui_
@@ -26,6 +23,8 @@ yet is a console (kind of rss) application to download youtube videos. It uses _
 - sudo python setup.py install
 
 ## Usage
+
+First export your youtube data from https://takeout.google.com/, it should come with a subscriptions.json file. Move the subscriptions.json into ~/.config/yet folder.
 
 Run 'yet' from your terminal emulator.
 
