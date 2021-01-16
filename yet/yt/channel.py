@@ -3,7 +3,7 @@ import urllib.request as urllib2
 import xmltodict
 
 
-class Entry():
+class Entry:
 
     def __init__(self, entry):
         self.title = entry['title']
@@ -20,36 +20,42 @@ class Entry():
         return self.title
 
     def get_extended_info(self) -> list:
-        return [self.title, self.description, "Published:%s" % (self.published),
-                "Updated:%s" % (self.updated), "Views:%s" % (self.views)]
+        return [self.title, self.description, f"Published:{self.published}",
+                f"Updated:{self.updated}", f"Views:{self.views}"]
 
 
-class Feed():
+class Feed:
 
-    def __init__(self, data):
+    def __init__(self, data: dict):
         self.data = data
-        self.author = self.data['feed']['author']['name']
-        self.url = self.data['feed']['author']['uri']
+        self.entries = []
+        feed = self.data.get('feed')
+        if feed is None:
+            return
+        # infos
+        self.author = feed['author']['name']
+        self.url = feed['author']['uri']
         # entries
-        entries = []
-        for i in self.data['feed']['entry']:
+        e = feed.get('entry')
+        if e is None:
+            return
+        for i in e:
             entry = Entry(i)
             # TODO check cache read
-            entries.append(entry)
-        self.entries = entries
+            self.entries.append(entry)
 
 
-class Channel():
+class Channel:
 
-    def __init__(self, id):
-        self.channel_id = id
+    def __init__(self, c_id):
+        self.channel_id = c_id
         self.feed = self.load_feed()
         self.url = self.feed.url
         self.author = self.feed.author
         self.entries = self.feed.entries
 
     def load_feed(self):
-        uri = 'https://www.youtube.com/feeds/videos.xml?channel_id=%s' % self.channel_id
+        uri = f'https://www.youtube.com/feeds/videos.xml?channel_id={self.channel_id}'
         with urllib2.urlopen(uri) as response:
             data = response.read()
             data = xmltodict.parse(data)
@@ -62,25 +68,25 @@ class Channel():
         return len(self.author)
 
 
-class Subsriptions():
+class Subscriptions:
 
     def __init__(self, channel_ids: list, callback=None):
         self.channel_ids = channel_ids
-        self.subsriptions = []
+        self.subscriptions = []
         self.callback = callback
         for i in range(len(channel_ids)):
-            # print("%i/%i - Fetching feed id:%s" %
-            #       (i, len(channel_ids), channel_ids[i]), end="\r")
-            self.subsriptions.append(Channel(channel_ids[i]))
+            channel = Channel(channel_ids[i])
+            if len(channel.entries) > 0:
+                self.subscriptions.append(channel)
             # send callback
             if self.callback is not None:
-                self.callback(i + 1, len(channel_ids), self.get_sorted_subsriptions())
+                self.callback(i + 1, len(channel_ids), self.get_sorted_subscriptions())
 
-    def get_sorted_subsriptions(self):
+    def get_sorted_subscriptions(self):
         return sorted(
-            self.subsriptions, key=lambda Channel: str(Channel))
+            self.subscriptions, key=lambda Channel: str(Channel))
 
-    def get_channel(self, id) -> Channel:
-        if id > len(self.subsriptions) - 1 or id < 0:
+    def get_channel(self, c_id) -> Channel:
+        if c_id > len(self.subscriptions) - 1 or c_id < 0:
             raise IndexError('id should be in range of subs list')
-        return self.subsriptions[id]
+        return self.subscriptions[c_id]

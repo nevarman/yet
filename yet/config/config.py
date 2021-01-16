@@ -4,7 +4,6 @@ import configparser
 import ast
 from pathlib import Path
 
-# TODO what happens in windows
 CONFIG_PATH = os.path.join(Path.home(), ".config", "yet")
 SUBS_PATH = os.path.join(CONFIG_PATH, "subscriptions.json")
 CONFIG_FILE_PATH = os.path.join(CONFIG_PATH, "yet.conf")
@@ -67,7 +66,7 @@ class YetConfig(object):
 
     def get_section(self, section_key) -> configparser.SectionProxy:
         """
-        Returns section proxy, if key is not avaible raises YetConfigException
+        Returns section proxy, if key is not available raises YetConfigException
         """
         if not self.config.has_section(section_key):
             raise YetConfigException(

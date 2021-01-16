@@ -1,5 +1,5 @@
 from yet.ui.window import Window
-from yet.yt.channel import Subsriptions
+from yet.yt.channel import Subscriptions
 from yet.config import config
 from yet.config.videoscache import VideosCache
 
@@ -12,13 +12,13 @@ def main():
         channel_ids = ["UCLA_DiR1FfKNvjuUpBHmylQ"]
 
     try:
-        yetconfig = config.YetConfig()
+        yet_config = config.YetConfig()
     except config.YetConfigException:
         return
 
-    videoscache = VideosCache(yetconfig.get_section("common").getint("clean_cache", fallback=0))
-    window = Window(None, yetconfig=yetconfig, videoscache=videoscache)
-    Subsriptions(channel_ids, window.update_model)
+    videos_cache = VideosCache(yet_config.get_section("common").getint("clean_cache", fallback=0))
+    window = Window(None, yetconfig=yet_config, videoscache=videos_cache)
+    Subscriptions(channel_ids, window.update_model)
     window.run()
 
 
