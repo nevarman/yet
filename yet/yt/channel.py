@@ -8,11 +8,11 @@ class Entry:
     def __init__(self, entry):
         self.title = entry['title']
         self.link = entry['link']['@href']
-        self.published = entry['published'].replace("T", " / ")
-        self.updated = entry['updated'].replace("T", " / ")
+        self.published = entry['published'].replace("T", " / ") if entry['published'] is not None else "-"
+        self.updated = entry['updated'].replace("T", " / ") if entry['updated'] is not None else "-"
         self.thumbnail = entry['media:group']['media:thumbnail']['@url']
         self.description = entry['media:group']['media:description'].replace(
-            '\n', '')
+                '\n', '') if entry['media:group']['media:description'] is not None else "No information..."
         self.views = entry['media:group']['media:community']['media:statistics']['@views']
         self.read = False
 
@@ -84,7 +84,7 @@ class Subscriptions:
 
     def get_sorted_subscriptions(self):
         return sorted(
-            self.subscriptions, key=lambda Channel: str(Channel))
+            self.subscriptions, key=lambda ch: str(ch))
 
     def get_channel(self, c_id) -> Channel:
         if c_id > len(self.subscriptions) - 1 or c_id < 0:
